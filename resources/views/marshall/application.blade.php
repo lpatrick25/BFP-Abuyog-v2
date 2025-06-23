@@ -34,14 +34,24 @@
                     </div>
                     <div class="card-body">
                         <div id="toolbar">
-                            <button class="btn btn-primary btn-sm" >Under Review <span class="badge badge-dark">
-                                </span></button>
-                            <button class="btn btn-secondary btn-sm">Scheduled for Inspection  <span class="badge badge-dark">
-                                </span></button>
-                            <button class="btn btn-info btn-sm">Certificate Approval Pending  <span class="badge badge-dark">
-                                </span></button>
-                            <button class="btn btn-success btn-sm">Certificate Issued  <span class="badge badge-dark">
-                                </span></button>
+                            <button class="btn btn-primary btn-sm" data-id="Under Review">
+                                Under Review <span class="badge badge-dark">{{ $finalStatistics['Under Review'] }}</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" data-id="Scheduled for Inspection">
+                                Scheduled for Inspection <span
+                                    class="badge badge-dark">{{ $finalStatistics['Scheduled for Inspection'] }}</span>
+                            </button>
+                            <button class="btn btn-info btn-sm" data-id="Certificate Approval Pending">
+                                Certificate Approval Pending <span
+                                    class="badge badge-dark">{{ $finalStatistics['Certificate Approval Pending'] }}</span>
+                            </button>
+                            <button class="btn btn-success btn-sm" data-id="Certificate Issued">
+                                Certificate Issued <span
+                                    class="badge badge-dark">{{ $finalStatistics['Certificate Issued'] }}</span>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-id="Denied">
+                                Denied <span class="badge badge-dark">{{ $finalStatistics['Denied'] }}</span>
+                            </button>
                         </div>
                         <table id="table1" data-toggle="data-bs-toggle" data-fixed-columns="true" data-fixed-number="1"
                             data-fixed-right-number="1" data-i18n-enhance="true" data-mobile-responsive="true"
@@ -176,13 +186,11 @@
                             let linkTag = '';
 
                             if (fileType === 'pdf') {
-                                // Handle PDFs (Open in new tab or FS Lightbox iframe)
                                 linkTag = `
                                     <a href="${req.url}" data-fslightbox="fsic-gallery" data-type="iframe" class="thumbnail-link">
                                         <img src="${req.thumbnail}" alt="Thumbnail" class="img-thumbnail shadow-sm rounded" width="60">
                                     </a>`;
                             } else {
-                                // Handle images
                                 linkTag = `
                                     <a href="${req.url}" data-fslightbox="fsic-gallery" data-type="image" class="thumbnail-link">
                                         <img src="${req.thumbnail}" alt="Thumbnail" class="img-thumbnail shadow-sm rounded" width="60">
@@ -200,7 +208,6 @@
                         html += '</ul>';
                         $('#requirementsContainer').html(html);
 
-                        // Refresh FS Lightbox to register new elements
                         refreshFsLightbox();
                     } else {
                         $('#requirementsContainer').html(
@@ -208,7 +215,7 @@
                         );
                     }
 
-                    $('#requirements').modal('show'); // Show the modal
+                    $('#requirements').modal('show');
                 },
                 error: function(xhr) {
                     showToast('danger', xhr.responseJSON.error || 'Something went wrong.');
@@ -236,13 +243,12 @@
                 success: function(response) {
                     if (response && response.application && response.application.schedule) {
                         const scheduleDate = response.application.schedule.schedule_date;
-                        const formattedDate = scheduleDate.slice(0, 10); // Get 'YYYY-MM-DD'
+                        const formattedDate = scheduleDate.slice(0, 10);
 
-                        // alert(formattedDate);
                         $('#payment_date').attr('min', formattedDate);
                         $('#payment_date').val(formattedDate);
 
-                        $('#payment').modal('show'); // Show the payment modal
+                        $('#payment').modal('show');
                     } else {
                         showToast('danger', 'Application schedule details not found.');
                     }
@@ -254,18 +260,15 @@
         }
 
         $(document).ready(function() {
-            // $("select").select2({
-            //     width: '100%'
-            // });
 
             $('#schedule_date').on('change', function() {
                 const selectedDate = new Date($(this).val());
-                const day = selectedDate.getDay(); // 0 = Sunday, 6 = Saturday
+                const day = selectedDate.getDay();
 
                 if (day === 0 || day === 6) {
                     showToast('danger',
                         'Weekends are not allowed. Please select a weekday (Monday to Friday).');
-                    $(this).val(''); // Clear the invalid date
+                    $(this).val('');
                 }
             });
 
@@ -282,16 +285,8 @@
                 buttonup_class: 'btn btn-white'
             });
 
-            // $("#or_number").TouchSpin({
-            //     min: 0,
-            //     max: 9999999999,
-            //     verticalbuttons: true,
-            //     buttondown_class: 'btn btn-white',
-            //     buttonup_class: 'btn btn-white'
-            // });
-
             var $table1 = $('#table1');
-            var currentStatus = 'Under Review'; // Track the current status filter
+            var currentStatus = 'Under Review';
 
             $table1.bootstrapTable({
                 url: '/applications',
@@ -388,39 +383,30 @@
                 ]
             });
 
-            // Filter button click handlers
             $('#toolbar .btn').click(function() {
-                var status = $(this).text().trim(); // Get the button text (e.g., "Under Review")
+                var status = $(this).data('id').trim();
                 if (status === currentStatus) {
-                    // If the same button is clicked again, clear the filter
-                    currentStatus = '';
+                    // currentStatus = '';
                     $(this).removeClass('active');
                 } else {
-                    // Set the new status filter and mark the button as active
                     currentStatus = status;
                     $('#toolbar .btn').removeClass('active');
                     $(this).addClass('active');
                 }
-                // Refresh the table with the new filter
                 $table1.bootstrapTable('refresh');
             });
 
-            // Format the "Actions" column
             function actionFormatter(value, row, index) {
-                // Check if there are statuses
                 if (!row.application_statuses || row.application_statuses.length === 0) {
-                    return ''; // No statuses, so no buttons
+                    return '';
                 }
 
-                // Find the latest status (based on updated_at)
                 let latestStatus = row.application_statuses.reduce((latest, status) => {
                     return new Date(status.updated_at) > new Date(latest.updated_at) ? status : latest;
                 });
 
-                // Default action buttons
                 let actionButtons = ``;
 
-                // If the latest status is NOT "Under Review", disable or hide the buttons
                 if (latestStatus.status === "Under Review") {
                     actionButtons += `
                         <button class="btn btn-sm btn-info" onclick="applicationSchedule('${row.id}')">
@@ -450,19 +436,15 @@
                 return actionButtons;
             }
 
-            // Click event for the table rows
             $table1.on('click-row.bs.table', function(e, row, $element) {
-                // Prevent multiple event bindings
                 if (!$element.data('click-bound')) {
                     $element.data('click-bound', true);
 
-                    // Attach click event to all <td> except the last column (Actions)
                     $element.find('td:not(:last)').on('click', function() {
                         // Open the modal
                         viewFSICRequirements(row.id);
                     });
 
-                    // Initialize tooltip once
                     $element.attr('title', `Show application status`).tooltip({
                         trigger: 'hover',
                         placement: 'top'
@@ -477,7 +459,6 @@
                 let submitBtn = $('button[type="submit"]');
                 submitBtn.prop('disabled', true).text('Processing...');
 
-                // Remove previous error messages and invalid classes
                 $('.is-invalid').removeClass('is-invalid');
                 $('.invalid-feedback').remove();
 
@@ -495,7 +476,6 @@
                         clearInterval(timerInterval);
                         showToast('success', response.message);
 
-                        // Reset the form
                         $('#remarksForm')[0].reset();
 
                         $('#remarks').modal('hide');
@@ -515,7 +495,6 @@
                 let submitBtn = $('button[type="submit"]');
                 submitBtn.prop('disabled', true).text('Processing...');
 
-                // Remove previous error messages and invalid classes
                 $('.is-invalid').removeClass('is-invalid');
                 $('.invalid-feedback').remove();
 
@@ -534,7 +513,6 @@
                         clearInterval(timerInterval);
                         showToast('success', 'Success');
 
-                        // Reset the form
                         $('#scheduleForm')[0].reset();
 
                         $('#schedule').modal('hide');
@@ -554,7 +532,6 @@
                 let submitBtn = $('button[type="submit"]');
                 submitBtn.prop('disabled', true).text('Processing...');
 
-                // Remove previous error messages and invalid classes
                 $('.is-invalid').removeClass('is-invalid');
                 $('.invalid-feedback').remove();
 
@@ -574,7 +551,6 @@
                         clearInterval(timerInterval);
                         showToast('success', 'Success');
 
-                        // Reset the form
                         $('#paymentForm')[0].reset();
 
                         $('#payment').modal('hide');

@@ -103,11 +103,28 @@ class MarshallController extends Controller
     public function applicants()
     {
         try {
-            // Retrieve all users with the role "Inspector" and eager-load the related Inspector model
+            // Get all inspectors
             $inspectors = User::where('role', 'Inspector')->with('inspector')->get();
 
-            // Pass the data to the view
-            return view('marshall.application', compact('inspectors'));
+            // Compute statistics directly
+            $statistics = Application::with('latestStatus')
+                ->get()
+                ->groupBy(function ($application) {
+                    return optional($application->latestStatus)->status ?? 'Unknown';
+                })->map(function ($group) {
+                    return $group->count();
+                });
+
+            // Initialize all possible statuses to 0 if not existing
+            $finalStatistics = [
+                'Under Review' => $statistics->get('Under Review', 0),
+                'Scheduled for Inspection' => $statistics->get('Scheduled for Inspection', 0),
+                'Certificate Approval Pending' => $statistics->get('Certificate Approval Pending', 0),
+                'Certificate Issued' => $statistics->get('Certificate Issued', 0),
+                'Denied' => $statistics->get('Denied', 0),
+            ];
+
+            return view('marshall.application', compact('inspectors', 'finalStatistics'));
         } catch (\Exception $e) {
             Log::error('Error retrieving Application View', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Application View not found.'], 500);

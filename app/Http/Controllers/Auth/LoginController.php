@@ -18,10 +18,8 @@ class LoginController extends Controller
 
     public function login(Request $request): JsonResponse
     {
-        // Use IP-only cache key
         $cacheKey = 'login_attempts:' . md5($request->ip());
 
-        // Check if client is locked out
         if (Cache::has($cacheKey . ':lockout')) {
             $lockoutEnd = Cache::get($cacheKey . ':lockout');
             $secondsRemaining = Carbon::parse($lockoutEnd)->diffInSeconds(now());
@@ -33,10 +31,8 @@ class LoginController extends Controller
             ], 429);
         }
 
-        // Get current attempts
         $attempts = Cache::get($cacheKey, 0);
 
-        // Validate input
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required'
@@ -51,7 +47,6 @@ class LoginController extends Controller
             ], 422);
         }
 
-        // Find user (including soft-deleted)
         $user = User::withTrashed()->where('email', $request->email)->first();
 
         if (!$user || $user->trashed()) {
@@ -72,7 +67,6 @@ class LoginController extends Controller
             ], 403);
         }
 
-        // Check related model (soft deleted)
         switch ($user->role) {
             case 'Client':
                 $client = $user->client()->withTrashed()->first();
@@ -111,15 +105,12 @@ class LoginController extends Controller
                 break;
         }
 
-        // Attempt login
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
 
-            // Clear attempts on successful login
             Cache::forget($cacheKey);
             Cache::forget($cacheKey . ':lockout');
 
-            // Generate Sanctum token
             $expiresAt = Carbon::now()->addDays(7);
             $tokenResult = $user->createToken('api-token', ['*'], $expiresAt);
             $token = $tokenResult->plainTextToken;
@@ -133,7 +124,6 @@ class LoginController extends Controller
             ], 200);
         }
 
-        // Wrong password
         $this->incrementAttempts($cacheKey, $attempts);
         return response()->json([
             'status' => 'error',
@@ -152,7 +142,6 @@ class LoginController extends Controller
         }
     }
 
-    // New method to check lockout status
     public function checkLockout(Request $request): JsonResponse
     {
         $cacheKey = 'login_attempts:' . md5($request->ip());

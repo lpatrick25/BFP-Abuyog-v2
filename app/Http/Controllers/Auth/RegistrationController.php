@@ -7,14 +7,10 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\Client;
 use App\Models\User;
 use App\Notifications\VerifyEmailNotification;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use GuzzleHttp\Client as HttpClient;
 
 class RegistrationController extends Controller
@@ -26,7 +22,6 @@ class RegistrationController extends Controller
         $recaptchaSecret = env('RECAPTCHA_SECRET_KEY');
 
         $httpClient = new HttpClient();
-        $httpClient = new \GuzzleHttp\Client();
 
         try {
             $recaptchaVerification = $httpClient->post('https://www.google.com/recaptcha/api/siteverify', [

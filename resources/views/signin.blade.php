@@ -136,9 +136,6 @@
 
             let lockoutTimerInterval;
 
-            // Check lockout status on page load
-            checkLockoutStatus();
-
             $('#loginForm').submit(function(event) {
                 event.preventDefault();
 
@@ -168,9 +165,10 @@
             function handleError(xhr) {
                 const response = xhr.responseJSON;
 
-                if (xhr.status === 429 && response?.message) {
-                    setLockout(response.lockout_end, response.seconds_remaining);
-                    showToast('danger', response.message);
+                if (xhr.status === 429) {
+                    const seconds = Number(response?.seconds_remaining) || 60; // fallback to 60 sec if undefined
+                    setLockout(response?.lockout_end || null, seconds);
+                    showToast('danger', response.message || 'Too Many Attempts.');
                 } else if (xhr.status === 422 && response?.errors) {
                     showValidationErrors(response.errors);
                     showToast('danger',
@@ -221,48 +219,22 @@
                 let toastClass = type === 'success' ? 'bg-success' : 'bg-danger';
 
                 let toastHtml = `
-            <div class="toast align-items-center text-white ${toastClass} border-0 show" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body text-center w-100">${message}</div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                </div>
-            </div>`;
+                <div class="toast align-items-center text-white ${toastClass} border-0 show" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body text-center w-100">${message}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>`;
 
                 $('.toast-container').html(toastHtml);
                 let toastElement = new bootstrap.Toast($('.toast')[0]);
                 toastElement.show();
             }
 
-            function checkLockoutStatus() {
-                $.ajax({
-                    method: 'GET',
-                    url: '/check-lockout', // Update with correct route
-                    dataType: 'JSON',
-                    success: function(response) {
-                        if (response.status === 'locked') {
-                            setLockout(response.lockout_end, response.seconds_remaining);
-                        } else {
-                            clearLockout();
-                        }
-                    },
-                    error: function() {
-                        // Fallback to localStorage
-                        const lockoutData = JSON.parse(localStorage.getItem('lockout_data') || '{}');
-                        if (lockoutData.lockout_end) {
-                            const secondsRemaining = Math.floor((new Date(lockoutData.lockout_end) -
-                                new Date()) / 1000);
-                            if (secondsRemaining > 0) {
-                                setLockout(lockoutData.lockout_end, secondsRemaining);
-                            } else {
-                                clearLockout();
-                            }
-                        }
-                    }
-                });
-            }
-
             function setLockout(lockoutEnd, secondsRemaining) {
-                // Store in localStorage
+                secondsRemaining = Number(secondsRemaining) || 0; // Ensure number type
+
+                // Store lockout data
                 localStorage.setItem('lockout_data', JSON.stringify({
                     lockout_end: lockoutEnd
                 }));
@@ -270,7 +242,6 @@
                 // Disable form
                 $('#loginForm input, #loginForm button').prop('disabled', true);
 
-                // Start timer
                 updateLockoutTimer(secondsRemaining);
 
                 clearInterval(lockoutTimerInterval);
@@ -285,6 +256,7 @@
             }
 
             function updateLockoutTimer(secondsRemaining) {
+                secondsRemaining = Number(secondsRemaining) || 0; // Defensive check
                 const minutes = Math.floor(secondsRemaining / 60);
                 const seconds = secondsRemaining % 60;
                 const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
