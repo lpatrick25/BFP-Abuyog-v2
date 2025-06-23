@@ -1,0 +1,59 @@
+```Unnormalized
+FireSafetyManagement (
+    user(email, password, role, is_active),
+    marshall(marshall_name, contact_number, email),
+    inspector(inspector_name, contact_number, email),
+    client(client_name, contact_number, email),
+    establishment(establishment_name, representative_name, trade_name, total_building_area,
+    number_of_occupant, type_of_occupancy, type_of_building, nature_of_business, BIN, TIN, DTI, SEC,
+    high_rise, eminent_danger, establishment_address),
+    application(application_number, fsic_type, application_date, status, remarks,
+    inspector_name, schedule_date, schedule_status, fsic_no, issue_date, expiration_date, amount, or_number, payment_date, marshall_name),
+)
+```
+
+```First Normal Form
+FireSafetyManagement (
+    user(email, password, role, is_active),
+    marshall(first_name, middle_name, last_name, extension_name, contact_number, email),
+    inspector(first_name, middle_name, last_name, extension_name, contact_number, email),
+    client(first_name, middle_name, last_name, extension_name, contact_number, email),
+    establishment(establishment_name, representative_name, trade_name, total_building_area,
+    number_of_occupant, type_of_occupancy, type_of_building, nature_of_business, BIN, TIN, DTI, SEC,
+    high_rise, eminent_danger, address_brgy, address_ex, location_latitude, location_longitude,
+    email, landline, contact_number),
+    application(application_number, fsic_type, application_date, status, remarks,
+    inspector_name, schedule_date, schedule_status, fsic_no, issue_date, expiration_date, amount, or_number, payment_date, marshall_name),
+)
+```
+
+```Second Normal Form
+FireSafetyManagement (
+    user(id, email, password, role, is_active),
+    marshall(id, first_name, middle_name, last_name, extension_name, contact_number, email, user_id),
+    inspector(id, first_name, middle_name, last_name, extension_name, contact_number, email, user_id),
+    client(id, first_name, middle_name, last_name, extension_name, contact_number, email, user_id),
+    establishment(id, establishment_name, representative_name, trade_name, total_building_area,
+    number_of_occupant, type_of_occupancy, type_of_building, nature_of_business, BIN, TIN, DTI, SEC,
+    high_rise, eminent_danger, address_brgy, address_ex, location_latitude, location_longitude,
+    email, landline, contact_number, client_id),
+    application(id, application_number, fsic_type, application_date, status, remarks,
+    schedule_date, schedule_status, fsic_no, issue_date, expiration_date, amount, or_number, payment_date, application_id, establishment_id, inspector_id, marshall_id),
+)
+```
+
+```Third Normal Form
+FireSafetyManagement (
+    user(id, email, password, role, is_active),
+    marshall(id, first_name, middle_name, last_name, extension_name, contact_number, email, user_id),
+    inspector(id, first_name, middle_name, last_name, extension_name, contact_number, email, user_id),
+    client(id, first_name, middle_name, last_name, extension_name, contact_number, email, user_id),
+    establishment(id, establishment_name, representative_name, trade_name, total_building_area,
+    number_of_occupant, type_of_occupancy, type_of_building, nature_of_business, BIN, TIN, DTI, SEC,
+    high_rise, eminent_danger, address_brgy, address_ex, location_latitude, location_longitude,
+    email, landline, contact_number, client_id),
+    application(id, application_number, fsic_type, application_date, status, remarks),
+    schedule(id, schedule_date, schedule_status, inspector_id, application_id, establishment_id),
+    fsic(id, fsic_no, issue_date, expiration_date, amount, or_number, payment_date, application_id, marshall_id, inspector_id),
+)
+```
