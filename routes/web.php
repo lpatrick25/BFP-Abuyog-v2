@@ -57,7 +57,6 @@ Route::middleware('guest')->group(function () {
     Route::view('/signup', 'signup')->name('signup');
     Route::view('/recover', 'recover')->name('recover');
     Route::post('/login', [LoginController::class, 'login'])->name('login')->middleware('throttle:3,5');
-    Route::get('/check-lockout', [LoginController::class, 'checkLockout']);
     Route::post('/register', [RegistrationController::class, 'register'])->name('register');
     Route::post('/password/email', [ResetPasswordController::class, 'sendResetLink'])->name('password.email');
     Route::get('/password/reset/{token}', function ($token) {
