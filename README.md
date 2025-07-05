@@ -107,6 +107,46 @@ Visit the app at: [http://localhost:8000](http://localhost:8000)
 
 ---
 
+# Project Structure
+
+This document describes the main folders and files in the project.
+
+## Root Directory
+
+- `artisan` - Laravel's command-line interface.
+- `composer.json` / `composer.lock` - PHP dependencies and lock file.
+- `package.json` - Node.js dependencies.
+- `phpunit.xml` - PHPUnit configuration.
+- `README.md` - Project documentation.
+- `vite.config.js` - Vite build tool configuration.
+
+## Main Folders
+
+- `app/` - Application core code (Controllers, Models, Mail, Notifications, etc.)
+  - `Console/` - Artisan commands.
+  - `Events/` - Event classes.
+  - `Exceptions/` - Exception handling.
+  - `Http/` - Controllers, Middleware, Requests, Resources.
+  - `Mail/` - Mailable classes.
+  - `Models/` - Eloquent models.
+  - `Notifications/` - Notification classes.
+  - `Observers/` - Model observers.
+  - `Providers/` - Service providers.
+  - `Services/` - Custom services.
+  - `Traits/` - Reusable traits.
+
+- `bootstrap/` - Application bootstrap files.
+- `config/` - Configuration files.
+- `database/` - Database migrations, seeders, and factories.
+- `public/` - Publicly accessible files (index.php, assets, uploads).
+- `resources/` - Views, raw assets (CSS, JS).
+- `routes/` - Route definitions (`web.php`, `api.php`, etc.).
+- `storage/` - Logs, cache, compiled files, user uploads.
+- `tests/` - Test cases (Feature, Unit).
+- `vendor/` - Composer dependencies.
+
+---
+
 ## 🔐 Authentication
 
 ### Guest Routes:
