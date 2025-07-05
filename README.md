@@ -7,96 +7,217 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-# BFP Abuyog Laravel System
+# 🔥 BFP Abuyog Laravel System – User Manual
 
-This is a Laravel-based system for the Bureau of Fire Protection (BFP) Abuyog. Follow these steps to set up and run the project locally.
+This is a Laravel-based web application developed for the **Bureau of Fire Protection (BFP) – Abuyog**, designed to manage fire safety inspections, establishment mapping, user roles, and application processing in a centralized and efficient manner.
 
-## Prerequisites
+---
 
-- PHP >= 8.1
-- Composer
-- Node.js & npm
-- MySQL or compatible database
-- Git
+## 🛠️ Prerequisites
 
-## Setup Instructions
+Ensure the following are installed on your system:
+
+* PHP ≥ 8.1
+* Composer
+* Node.js and npm
+* MySQL or compatible database
+* Git
+* Laravel CLI (optional, but recommended)
+
+---
+
+## ⚙️ Setup Instructions
 
 ### 1. Clone the Repository
 
-```powershell
+```bash
 git clone git@github.com:lpatrick25/BFPAbuyog.git
 cd BFPAbuyog
 ```
 
-### 2. Install PHP Dependencies
+### 2. Install Backend Dependencies
 
-```powershell
+```bash
 composer install
 ```
 
-### 3. Install Node.js Dependencies
+### 3. Install Frontend Dependencies
 
-```powershell
+```bash
 npm install
 ```
 
-### 4. Copy and Configure Environment File
+### 4. Configure Environment File
 
-```powershell
-copy .env.example .env
+```bash
+cp .env.example .env
 ```
 
-Edit the `.env` file to match your local database and mail settings.
+Then, update your `.env` with the correct **database**, **mail**, and **APP_URL** values.
 
-### 5. Generate Application Key
+### 5. Generate App Key
 
-```powershell
+```bash
 php artisan key:generate
 ```
 
 ### 6. Run Migrations and Seeders
 
-```powershell
+```bash
 php artisan migrate --seed
 ```
 
-### 7. Link Storage (for file uploads)
+### 7. Link Storage for Uploads
 
-```powershell
+```bash
 php artisan storage:link
 ```
 
 ### 8. Build Frontend Assets
 
-```powershell
+```bash
 npm run build
 ```
 
 ### 9. Start the Development Server
 
-```powershell
+```bash
 php artisan serve
 ```
 
-Visit [http://localhost:8000](http://localhost:8000) in your browser.
+Visit the app at: [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## Additional Commands
+## 🔐 Authentication
 
-- To run tests:
-  ```powershell
-  php artisan test
-  ```
-- To run the frontend in watch mode:
-  ```powershell
-  npm run dev
-  ```
+### Guest Routes:
 
-## Troubleshooting
-- Ensure all prerequisites are installed and available in your PATH.
-- If you encounter permission issues, try running your terminal as administrator.
-- For any issues, check the Laravel [documentation](https://laravel.com/docs) or open an issue in this repository.
+* `/signin` – Login page
+* `/signup` – Registration page
+* `/recover` – Forgot password
+* `/password/reset/{token}` – Reset password page
+
+### Email Verification
+
+The system supports email verification through signed URLs and includes notification support.
+
+---
+
+## 👥 User Roles and Routes
+
+### 🔸 Admin
+
+**Dashboard:** `/admin/dashboard`
+Can manage:
+
+* Clients
+* Marshalls
+* Inspectors
+* Users
+* Mapping
+* Establishment Profiles
+  Includes token generation and session routing.
+
+---
+
+### 🔸 Client
+
+**Dashboard:** `/client/dashboard`
+Can:
+
+* Register Establishments
+* Submit Applications
+* Track Schedules & FSICs
+* Generate Session Tokens
+* Map Establishments
+* View and Edit Submissions
+
+---
+
+### 🔸 Marshall
+
+**Dashboard:** `/marshall/dashboard`
+Can:
+
+* View Applicant List & Establishments
+* Handle Schedules and FSIC lists
+* Generate Reports (Compliance, Audit, Statistical, etc.)
+
+---
+
+### 🔸 Inspector
+
+**Dashboard:** `/inspector/dashboard`
+Can:
+
+* View Schedules and Assignments
+* View Establishment Locations
+* Generate Session Tokens
+
+---
+
+## 🗺️ Public Access Routes
+
+* `/` – Home
+* `/e-FSIC/{fsicNo?}` – View FSIC by number
+* `/fsic_no/{fsicNo}` – Decrypt and redirect to FSIC
+
+---
+
+## 📍 Map & Push Notification Features
+
+* View Map: `/load-map-view`
+* Store Push Subscription: `/store-subscription`
+* Search FSIC: `/search-FSIC`
+
+---
+
+## 🔄 Resource Controllers
+
+These are automatically mapped using `Route::resources()`:
+
+* Clients
+* Marshalls
+* Inspectors
+* Users
+* Establishments
+* Applications
+* Application Status
+* Schedules
+* FSICs
+
+---
+
+## 🧪 Additional Commands
+
+```bash
+# Run Laravel feature & unit tests
+php artisan test
+
+# Start Vite dev server for live-reloading assets
+npm run dev
+```
+
+---
+
+## 🧯 Troubleshooting
+
+| Problem                    | Solution                                            |
+| -------------------------- | --------------------------------------------------- |
+| `.env` file missing        | Copy `.env.example` to `.env`                       |
+| Migrations failing         | Check DB config and run `php artisan migrate:fresh` |
+| Storage files missing      | Run `php artisan storage:link`                      |
+| Styles/scripts not working | Re-run `npm install && npm run build`               |
+
+---
+
+## 📬 Support
+
+* Maintained by: `Patrick Y. Leoncito` (Developer)
+* Contributor: `John Rey P. Doromal and Roenamae B. Turtosa`
+* Email: `patrickleoncito25@gmail.com`
+* Laravel Docs: [https://laravel.com/docs](https://laravel.com/docs)
 
 ---
 
