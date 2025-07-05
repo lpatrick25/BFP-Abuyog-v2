@@ -28,12 +28,30 @@ Ensure the following are installed on your system:
 
 ## ⚙️ Setup Instructions
 
-### 1. Clone the Repository
+### 1. Clone the Repository or Use Project Zip File
+
+You can either clone the repository from GitHub or use the attached project zip file (`BFP-Abuyog-v2.zip`) to set up the project.
+
+#### Option 1: Clone the Repository
+Clone the repository using either SSH or HTTPS:
 
 ```bash
-git clone git@github.com:lpatrick25/BFPAbuyog.git
-cd BFPAbuyog
+# Using SSH
+git clone git@github.com:lpatrick25/BFP-Abuyog-v2.git
+# Or using HTTPS
+git clone https://github.com/lpatrick25/BFP-Abuyog-v2.git
+cd BFP-Abuyog-v2
 ```
+
+#### Option 2: Use the Attached Project Zip File
+If you have the project zip file (`BFP-Abuyog-v2.zip`), extract it to your desired directory:
+
+```bash
+unzip BFP-Abuyog-v2.zip
+cd BFP-Abuyog-v2
+```
+
+**Explanation**: Cloning the repository directly from GitHub ensures you have the latest version of the project and allows for easy updates using Git. Alternatively, the attached zip file provides a snapshot of the project, which is useful if you prefer working offline or do not have Git installed. Both methods provide the same project files, so choose the one that best suits your workflow.
 
 ### 2. Install Backend Dependencies
 
